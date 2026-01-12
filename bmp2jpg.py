@@ -1,18 +1,27 @@
 
 import os
+import sys
 from io import BytesIO
 from pathlib import Path
+import shutil
 
-from PIL import Image  # pip install pillow
+from PIL import Image  # pip install pillow or conda install pillow
 
 myhome = Path.home()
 # print(Path.home())
-INPUT_DIR = myhome / "workspaces/bmp2jpg/bmp"
+input_path = "Downloads/allison"
+output_path = input_path + "/jpgs_from_bmps"
+INPUT_DIR = myhome / input_path
+OUTPUT_DIR = Path.home() / Path(output_path)
+
 print(f"{INPUT_DIR=}")
-OUTPUT_DIR = Path.home() / Path(r"workspaces/bmp2jpg/jpg")
+print(f"{OUTPUT_DIR=}")
 
-
-print(OUTPUT_DIR)
+# user_command = None
+# user_commmand = input("Proceed? (Y/N)?").lower()
+# if user_command != 'y':
+#     print(f"{user_commmand}")
+#     sys.exit(0)
 
 MAX_SIZE_BYTES = 200 * 1024  # 200 KB
 MIN_QUALITY = 10             # don't go below this
@@ -75,6 +84,52 @@ def convert_directory_bmp_to_jpg(input_dir: Path, output_dir: Path):
                 compress_to_target_size(img, out_path)
         except Exception as e:
             print(f"Error processing {bmp_path}: {e}")
+
+
+
+
+def move_file_to_folder(source_file, destination_folder):
+    """
+    Moves a file to a destination folder, creating the folder if necessary.
+
+    Args:
+        source_file (str): The path to the source file.
+        destination_folder (str): The path to the destination folder.
+    """
+    # 1. Create the destination folder(s) if they do not exist
+    # exist_ok=True prevents an error if the directory already exists
+    try:
+        os.makedirs(destination_folder, exist_ok=True)
+        print(f"Ensured destination folder '{destination_folder}' exists or was created.")
+    except OSError as e:
+        print(f"Error creating directory {destination_folder}: {e}")
+        return
+
+    # 2. Construct the full destination path for the file
+    file_name = os.path.basename(source_file)
+    destination_path = os.path.join(destination_folder, file_name)
+
+    # 3. Move the file
+    try:
+        shutil.move(source_file, destination_path)
+        print(f"Successfully moved '{source_file}' to '{destination_path}'.")
+    except FileNotFoundError:
+        print(f"Error: Source file '{source_file}' not found.")
+    except Exception as e:
+        print(f"Error moving file: {e}")
+
+# # --- Example Usage ---
+# # Define source file and destination folder paths
+# source = "my_file.txt"
+# destination = "path/to/new_folder"
+
+# # Create a dummy file for testing purposes
+# with open(source, 'w') as f:
+#     f.write("This is a test file.")
+
+# # Call the function to move the file
+# move_file_to_folder(source, destination)
+
 
 
 if __name__ == "__main__":
